@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ShoppingCart, Menu, X, ChevronDown, Star, Shield, Truck, Award } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
-// Header Component
+// Header Component with updated navigation
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,17 +18,17 @@ export const Header = () => {
   }, []);
 
   const navItems = [
-    { name: 'HOME', href: '#home' },
-    { name: 'SHOP', href: '#shop' },
-    { name: 'HAMMOCKS', href: '#hammocks', hasDropdown: true },
-    { name: 'TOP INSULATION', href: '#insulation', hasDropdown: true },
-    { name: 'SHELTER', href: '#shelter', hasDropdown: true },
-    { name: 'ACCESSORIES', href: '#accessories', hasDropdown: true },
-    { name: 'BUNDLE PRICING', href: '#bundle' },
-    { name: 'LEARN', href: '#learn', hasDropdown: true },
-    { name: 'CONTACT', href: '#contact' },
-    { name: 'MY ACCOUNT', href: '#account' },
-    { name: 'CART', href: '#cart' }
+    { name: 'ГЛАВНАЯ', href: '/', key: 'home' },
+    { name: 'МАГАЗИН', href: '/shop', key: 'shop' },
+    { name: 'ГАМАКИ', href: '/hammocks', key: 'hammocks', hasDropdown: true },
+    { name: 'УТЕПЛЕНИЕ', href: '/insulation', key: 'insulation', hasDropdown: true },
+    { name: 'ТЕНТЫ', href: '/shelter', key: 'shelter', hasDropdown: true },
+    { name: 'АКСЕССУАРЫ', href: '/accessories', key: 'accessories', hasDropdown: true },
+    { name: 'НАБОРЫ', href: '/bundle', key: 'bundle' },
+    { name: 'ОБУЧЕНИЕ', href: '/learn', key: 'learn', hasDropdown: true },
+    { name: 'КОНТАКТЫ', href: '/contact', key: 'contact' },
+    { name: 'АККАУНТ', href: '/account', key: 'account' },
+    { name: 'КОРЗИНА', href: '/cart', key: 'cart' }
   ];
 
   return (
@@ -46,40 +48,46 @@ export const Header = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <div className="w-12 h-12 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-full h-full fill-white">
-                <path d="M20 40 L50 20 L80 40 L70 45 L50 35 L30 45 Z"/>
-                <path d="M30 50 L50 40 L70 50 L70 60 L50 70 L30 60 Z"/>
-                <path d="M35 65 L50 60 L65 65 L50 75 Z"/>
-              </svg>
-            </div>
-            <span className="text-white text-xl font-bold tracking-wider">SUPERIOR GEAR</span>
-            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            <Link to="/" className="flex items-center space-x-3">
+              <div className="w-12 h-12 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="w-full h-full fill-white">
+                  <path d="M20 40 L50 20 L80 40 L70 45 L50 35 L30 45 Z"/>
+                  <path d="M30 50 L50 40 L70 50 L70 60 L50 70 L30 60 Z"/>
+                  <path d="M35 65 L50 60 L65 65 L50 75 Z"/>
+                </svg>
+              </div>
+              <span className="text-white text-xl font-bold tracking-wider">SUPERIOR GEAR</span>
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item, index) => (
               <motion.div
-                key={item.name}
+                key={item.key}
                 className="relative group"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <a
-                  href={item.href}
-                  className="text-white text-sm font-medium tracking-wide hover:text-blue-400 transition-colors duration-300 flex items-center space-x-1"
+                <Link
+                  to={item.href}
+                  className={`text-sm font-medium tracking-wide transition-colors duration-300 flex items-center space-x-1 ${
+                    location.pathname === item.href 
+                      ? 'text-blue-400' 
+                      : 'text-white hover:text-blue-400'
+                  }`}
                 >
                   <span>{item.name}</span>
                   {item.hasDropdown && <ChevronDown className="w-3 h-3" />}
-                </a>
+                </Link>
                 {item.hasDropdown && (
                   <div className="absolute top-full left-0 w-48 bg-black/95 backdrop-blur-sm rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 mt-2">
                     <div className="p-4 space-y-2">
-                      <a href="#" className="block text-white text-sm hover:text-blue-400 transition-colors">Option 1</a>
-                      <a href="#" className="block text-white text-sm hover:text-blue-400 transition-colors">Option 2</a>
-                      <a href="#" className="block text-white text-sm hover:text-blue-400 transition-colors">Option 3</a>
+                      <Link to="#" className="block text-white text-sm hover:text-blue-400 transition-colors">Популярные</Link>
+                      <Link to="#" className="block text-white text-sm hover:text-blue-400 transition-colors">Новинки</Link>
+                      <Link to="#" className="block text-white text-sm hover:text-blue-400 transition-colors">Скидки</Link>
                     </div>
                   </div>
                 )}
@@ -105,14 +113,18 @@ export const Header = () => {
             exit={{ opacity: 0, height: 0 }}
           >
             {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="block text-white text-sm font-medium py-2 hover:text-blue-400 transition-colors"
+              <Link
+                key={item.key}
+                to={item.href}
+                className={`block text-sm font-medium py-2 transition-colors ${
+                  location.pathname === item.href 
+                    ? 'text-blue-400' 
+                    : 'text-white hover:text-blue-400'
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
-              </a>
+              </Link>
             ))}
           </motion.div>
         )}
@@ -121,7 +133,7 @@ export const Header = () => {
   );
 };
 
-// Hero Section Component
+// Hero Section Component (same as before)
 export const HeroSection = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, -300]);
@@ -154,7 +166,7 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
-          YOUR NEXT ADVENTURE AWAITS
+          ВАШЕ СЛЕДУЮЩЕЕ ПРИКЛЮЧЕНИЕ ЖДЕТ
         </motion.p>
 
         <motion.h1
@@ -163,9 +175,9 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 1 }}
         >
-          <span className="block">SIMPLE</span>
-          <span className="block">COZY</span>
-          <span className="block">LIGHT</span>
+          <span className="block">ПРОСТОТА</span>
+          <span className="block">УЮТ</span>
+          <span className="block">ЛЕГКОСТЬ</span>
         </motion.h1>
 
         <motion.p
@@ -174,19 +186,21 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8 }}
         >
-          Discover the world's most versatile all weather hammock system.
+          Откройте для себя самую универсальную всепогодную систему гамаков в мире.
         </motion.p>
 
-        <motion.button
-          className="border border-white text-white px-8 py-3 text-sm font-medium tracking-wider hover:bg-white hover:text-black transition-all duration-300"
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.8 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
-          VIEW MORE ➤
-        </motion.button>
+          <Link
+            to="/shop"
+            className="border border-white text-white px-8 py-3 text-sm font-medium tracking-wider hover:bg-white hover:text-black transition-all duration-300 inline-block"
+          >
+            СМОТРЕТЬ БОЛЬШЕ ➤
+          </Link>
+        </motion.div>
       </motion.div>
 
       {/* Scroll Indicator */}
@@ -203,7 +217,7 @@ export const HeroSection = () => {
   );
 };
 
-// Products Overview Section
+// Products Overview Section (same as before but with updated Russian text)
 export const ProductsOverview = () => {
   return (
     <section className="py-20 bg-white">
@@ -216,13 +230,12 @@ export const ProductsOverview = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6">
-            SUPERIOR GEAR PRODUCTS
+            ПРОДУКЦИЯ SUPERIOR GEAR
           </h2>
           <p className="text-gray-600 text-lg max-w-4xl mx-auto leading-relaxed">
-            Shop our premium hammock gear and camping accessories for the ultimate outdoor experience. From ultralight 
-            hammocks and durable tarps to insulated underquilts and suspension systems, our high-quality gear is designed for 
-            comfort, protection, and adventure. Whether you're backpacking, camping, or lounging, find the perfect setup for 
-            your next trip!
+            Покупайте наше премиальное снаряжение для гамаков и аксессуары для кемпинга для лучшего отдыха на природе. 
+            От сверхлегких гамаков и прочных тентов до утепленных одеял и подвесных систем, наше высококачественное 
+            снаряжение создано для комфорта, защиты и приключений.
           </p>
         </motion.div>
 
@@ -236,18 +249,21 @@ export const ProductsOverview = () => {
             viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
           >
-            <div className="relative overflow-hidden rounded-lg mb-6">
-              <img
-                src="https://images.unsplash.com/photo-1697150474295-b8aec4f8ffe7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxoYW1tb2NrJTIwY2FtcGluZ3xlbnwwfHx8fDE3NTA5MDM1MDd8MA&ixlib=rb-4.1.0&q=85"
-                alt="Hammocks"
-                className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <h3 className="text-2xl font-light text-blue-600 mb-4">HAMMOCKS</h3>
-            <p className="text-gray-700 leading-relaxed">
-              Explore our premium hammocks, designed for comfort, durability, and adventure. Whether you need an ultralight option for backpacking or a cozy setup for backyard lounging, we have the perfect hammock for you.
-            </p>
+            <Link to="/hammocks">
+              <div className="relative overflow-hidden rounded-lg mb-6">
+                <img
+                  src="https://images.unsplash.com/photo-1697150474295-b8aec4f8ffe7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxoYW1tb2NrJTIwY2FtcGluZ3xlbnwwfHx8fDE3NTA5MDM1MDd8MA&ixlib=rb-4.1.0&q=85"
+                  alt="Гамаки"
+                  className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <h3 className="text-2xl font-light text-blue-600 mb-4">ГАМАКИ</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Исследуйте наши премиальные гамаки, созданные для комфорта, долговечности и приключений. 
+                Будь то сверхлегкий вариант для пеших походов или уютная установка для отдыха на заднем дворе.
+              </p>
+            </Link>
           </motion.div>
 
           {/* Top Insulation */}
@@ -259,18 +275,21 @@ export const ProductsOverview = () => {
             viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
           >
-            <div className="relative overflow-hidden rounded-lg mb-6">
-              <img
-                src="https://images.unsplash.com/photo-1736164508021-0c53a250f928?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwzfHxoYW1tb2NrJTIwYWNjZXNzb3JpZXN8ZW58MHx8fHwxNzUwOTAzNTIwfDA&ixlib=rb-4.1.0&q=85"
-                alt="Top Insulation"
-                className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <h3 className="text-2xl font-light text-blue-600 mb-4">TOP INSULATION</h3>
-            <p className="text-gray-700 leading-relaxed">
-              Stay warm and cozy in any season with our premium insulation and comforters. Designed for ultimate warmth and lightweight packability, they're perfect for hammock camping adventures.
-            </p>
+            <Link to="/insulation">
+              <div className="relative overflow-hidden rounded-lg mb-6">
+                <img
+                  src="https://images.unsplash.com/photo-1736164508021-0c53a250f928?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwzfHxoYW1tb2NrJTIwYWNjZXNzb3JpZXN8ZW58MHx8fHwxNzUwOTAzNTIwfDA&ixlib=rb-4.1.0&q=85"
+                  alt="Утепление"
+                  className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <h3 className="text-2xl font-light text-blue-600 mb-4">УТЕПЛЕНИЕ</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Оставайтесь в тепле и уюте в любое время года с нашим премиальным утеплением и одеялами. 
+                Созданы для максимального тепла и легкой упаковки.
+              </p>
+            </Link>
           </motion.div>
 
           {/* Hammock Accessories */}
@@ -282,18 +301,21 @@ export const ProductsOverview = () => {
             viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
           >
-            <div className="relative overflow-hidden rounded-lg mb-6">
-              <img
-                src="https://images.pexels.com/photos/31501018/pexels-photo-31501018.jpeg"
-                alt="Hammock Accessories"
-                className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <h3 className="text-2xl font-light text-blue-600 mb-4">HAMMOCK ACCESSORIES</h3>
-            <p className="text-gray-700 leading-relaxed">
-              Explore our hammock accessories and upgrade your setup with suspension systems, bug nets, ground stakes, and more—everything you need for the perfect hang!
-            </p>
+            <Link to="/accessories">
+              <div className="relative overflow-hidden rounded-lg mb-6">
+                <img
+                  src="https://images.pexels.com/photos/31501018/pexels-photo-31501018.jpeg"
+                  alt="Аксессуары для гамаков"
+                  className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <h3 className="text-2xl font-light text-blue-600 mb-4">АКСЕССУАРЫ</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Исследуйте наши аксессуары для гамаков и улучшите свою установку с подвесными системами, 
+                сетками от насекомых, креплениями и многим другим.
+              </p>
+            </Link>
           </motion.div>
 
           {/* Shelter Tarps */}
@@ -305,18 +327,21 @@ export const ProductsOverview = () => {
             viewport={{ once: true }}
             whileHover={{ scale: 1.02 }}
           >
-            <div className="relative overflow-hidden rounded-lg mb-6">
-              <img
-                src="https://images.unsplash.com/photo-1703304862580-206bdf82fbc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwxfHxvdXRkb29yJTIwc2hlbHRlciUyMHRhcnB8ZW58MHx8fHwxNzUwOTAzNTE1fDA&ixlib=rb-4.1.0&q=85"
-                alt="Shelter Tarps"
-                className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <h3 className="text-2xl font-light text-blue-600 mb-4">SHELTER TARPS</h3>
-            <p className="text-gray-700 leading-relaxed">
-              Stay dry and protected with our high-quality tarps and shelters. Designed for durability and lightweight coverage, they're perfect for any outdoor adventure.
-            </p>
+            <Link to="/shelter">
+              <div className="relative overflow-hidden rounded-lg mb-6">
+                <img
+                  src="https://images.unsplash.com/photo-1703304862580-206bdf82fbc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwxfHxvdXRkb29yJTIwc2hlbHRlciUyMHRhcnB8ZW58MHx8fHwxNzUwOTAzNTE1fDA&ixlib=rb-4.1.0&q=85"
+                  alt="Тенты-укрытия"
+                  className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <h3 className="text-2xl font-light text-blue-600 mb-4">ТЕНТЫ</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Оставайтесь сухими и защищенными с нашими высококачественными тентами и укрытиями. 
+                Созданы для прочности и легкого покрытия.
+              </p>
+            </Link>
           </motion.div>
         </div>
       </div>
@@ -324,31 +349,31 @@ export const ProductsOverview = () => {
   );
 };
 
-// Popular Hammocks Section
+// Popular Hammocks Section (same as before but with Russian text)
 export const PopularHammocks = () => {
   const hammocks = [
     {
       id: 1,
-      name: "Ultralight Backpacking Hammock",
+      name: "Сверхлегкий походный гамак",
       price: "$149.99",
       image: "https://images.unsplash.com/photo-1697150474295-b8aec4f8ffe7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxoYW1tb2NrJTIwY2FtcGluZ3xlbnwwfHx8fDE3NTA5MDM1MDd8MA&ixlib=rb-4.1.0&q=85",
-      features: ["Ultra-lightweight", "Weather-resistant", "Easy setup"],
+      features: ["Сверхлегкий", "Водостойкий", "Легкая установка"],
       rating: 4.9
     },
     {
       id: 2,
-      name: "All-Weather Camping Hammock",
+      name: "Всепогодный кемпинговый гамак",
       price: "$189.99",
       image: "https://images.pexels.com/photos/31501018/pexels-photo-31501018.jpeg",
-      features: ["All-weather protection", "Premium comfort", "Durable construction"],
+      features: ["Всепогодная защита", "Премиум комфорт", "Прочная конструкция"],
       rating: 4.8
     },
     {
       id: 3,
-      name: "Wilderness Explorer Hammock",
+      name: "Гамак для дикой природы",
       price: "$169.99",
       image: "https://images.unsplash.com/photo-1596742910522-4e3f36ebb393?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwyfHxjYW1waW5nJTIwd2lsZGVybmVzc3xlbnwwfHx8fDE3NTA5MDM1MjV8MA&ixlib=rb-4.1.0&q=85",
-      features: ["Wilderness tested", "Maximum comfort", "Reliable setup"],
+      features: ["Проверен в дикой природе", "Максимальный комфорт", "Надежная установка"],
       rating: 4.7
     }
   ];
@@ -372,15 +397,16 @@ export const PopularHammocks = () => {
             </svg>
           </div>
           <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6">
-            OUR MOST POPULAR HAMMOCKS
+            НАШИ САМЫЕ ПОПУЛЯРНЫЕ ГАМАКИ
           </h2>
           <p className="text-gray-600 text-lg max-w-4xl mx-auto leading-relaxed mb-8">
-            Experience unmatched comfort and durability with Superior Hammocks. Crafted from high-quality materials and designed for ultimate relaxation, our 
-            hammocks provide the perfect blend of breathability, stability, and convenience—whether you're camping in the wilderness or lounging in your backyard.
+            Испытайте непревзойденный комфорт и долговечность с гамаками Superior. Изготовленные из высококачественных 
+            материалов и созданные для максимального расслабления, наши гамаки обеспечивают идеальное сочетание воздухопроницаемости, 
+            стабильности и удобства.
           </p>
           <p className="text-gray-700 text-base max-w-3xl mx-auto">
-            From ultralight hammocks to weather-resistant tarps and cozy underquilts, these top-rated products ensure the best outdoor experience. Shop now and 
-            upgrade your camping setup with premium, high-performance gear designed for ultimate relaxation and protection from the elements.
+            От сверхлегких гамаков до водостойких тентов и уютных одеял, эти топовые продукты обеспечивают лучший опыт на природе. 
+            Покупайте сейчас и улучшите свое кемпинговое снаряжение премиальным, высокопроизводительным оборудованием.
           </p>
         </motion.div>
 
@@ -422,7 +448,7 @@ export const PopularHammocks = () => {
                 </ul>
                 
                 <button className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-300 font-medium">
-                  Add to Cart
+                  В корзину
                 </button>
               </div>
             </motion.div>
@@ -437,37 +463,40 @@ export const PopularHammocks = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           viewport={{ once: true }}
         >
-          <button className="bg-blue-600 text-white px-8 py-4 text-lg font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-xl">
-            View All Hammocks
-          </button>
+          <Link
+            to="/hammocks"
+            className="bg-blue-600 text-white px-8 py-4 text-lg font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-xl inline-block"
+          >
+            Посмотреть все гамаки
+          </Link>
         </motion.div>
       </div>
     </section>
   );
 };
 
-// Features Section
+// Features Section (same as before but with Russian text)
 export const FeaturesSection = () => {
   const features = [
     {
       icon: <Shield className="w-8 h-8" />,
-      title: "Weather Protection",
-      description: "Built to withstand all weather conditions with premium materials"
+      title: "Защита от погоды",
+      description: "Создано для выдерживания любых погодных условий с премиальными материалами"
     },
     {
       icon: <Award className="w-8 h-8" />,
-      title: "Premium Quality",
-      description: "Crafted with the highest quality materials for lasting durability"
+      title: "Премиальное качество",
+      description: "Изготовлено из материалов высочайшего качества для длительной службы"
     },
     {
       icon: <Truck className="w-8 h-8" />,
-      title: "Free Shipping",
-      description: "Free shipping on all orders over $75 within the United States"
+      title: "Бесплатная доставка",
+      description: "Бесплатная доставка всех заказов свыше $75 по всему миру"
     },
     {
       icon: <Star className="w-8 h-8" />,
-      title: "5-Star Rated",
-      description: "Trusted by thousands of outdoor enthusiasts worldwide"
+      title: "5-звездочный рейтинг",
+      description: "Доверие тысяч любителей активного отдыха по всему миру"
     }
   ];
 
@@ -497,7 +526,7 @@ export const FeaturesSection = () => {
   );
 };
 
-// Footer Component
+// Footer Component (updated with Russian text)
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -516,7 +545,7 @@ export const Footer = () => {
               <span className="text-lg font-bold">SUPERIOR GEAR</span>
             </div>
             <p className="text-gray-400 leading-relaxed mb-6">
-              Premium ultralight camping hammocks, tarps, and down quilts designed for comfort and adventure.
+              Премиальные сверхлегкие кемпинговые гамаки, тенты и пуховые одеяла, созданные для комфорта и приключений.
             </p>
             <div className="flex space-x-4">
               <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors cursor-pointer">
@@ -533,11 +562,19 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-medium mb-6">Quick Links</h4>
+            <h4 className="text-lg font-medium mb-6">Быстрые ссылки</h4>
             <ul className="space-y-3">
-              {['Shop All', 'Hammocks', 'Accessories', 'Shelter & Tarps', 'Bundle Deals'].map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">{link}</a>
+              {[
+                { name: 'Весь каталог', href: '/shop' },
+                { name: 'Гамаки', href: '/hammocks' },
+                { name: 'Аксессуары', href: '/accessories' },
+                { name: 'Тенты', href: '/shelter' },
+                { name: 'Наборы', href: '/bundle' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link to={link.href} className="text-gray-400 hover:text-white transition-colors">
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -545,11 +582,19 @@ export const Footer = () => {
 
           {/* Customer Service */}
           <div>
-            <h4 className="text-lg font-medium mb-6">Customer Service</h4>
+            <h4 className="text-lg font-medium mb-6">Служба поддержки</h4>
             <ul className="space-y-3">
-              {['Contact Us', 'Shipping Info', 'Returns', 'Size Guide', 'FAQ'].map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">{link}</a>
+              {[
+                { name: 'Контакты', href: '/contact' },
+                { name: 'Доставка', href: '#' },
+                { name: 'Возвраты', href: '#' },
+                { name: 'Размеры', href: '#' },
+                { name: 'FAQ', href: '#' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link to={link.href} className="text-gray-400 hover:text-white transition-colors">
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -557,16 +602,16 @@ export const Footer = () => {
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-lg font-medium mb-6">Stay Updated</h4>
-            <p className="text-gray-400 mb-4">Get the latest gear updates and outdoor tips.</p>
+            <h4 className="text-lg font-medium mb-6">Будьте в курсе</h4>
+            <p className="text-gray-400 mb-4">Получайте последние новости о снаряжении и советы для отдыха на природе.</p>
             <div className="flex">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Введите ваш email"
                 className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
               <button className="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors">
-                Subscribe
+                Подписаться
               </button>
             </div>
           </div>
@@ -575,12 +620,12 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © {currentYear} Superior Gear. All rights reserved.
+            © {currentYear} Superior Gear. Все права защищены.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Cookie Policy</a>
+            <Link to="#" className="text-gray-400 hover:text-white text-sm transition-colors">Политика конфиденциальности</Link>
+            <Link to="#" className="text-gray-400 hover:text-white text-sm transition-colors">Условия использования</Link>
+            <Link to="#" className="text-gray-400 hover:text-white text-sm transition-colors">Политика Cookie</Link>
           </div>
         </div>
       </div>
@@ -588,7 +633,7 @@ export const Footer = () => {
   );
 };
 
-// Cookie Banner Component
+// Cookie Banner Component (updated with Russian text)
 export const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -603,13 +648,14 @@ export const CookieBanner = () => {
     >
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between text-white text-sm">
         <p className="mb-4 md:mb-0 md:mr-4">
-          We use cookies to improve your experience on our site and to show you relevant content. By continuing to use our site, you consent to our use of cookies.
+          Мы используем файлы cookie для улучшения вашего опыта на нашем сайте и показа релевантного контента. 
+          Продолжая использовать наш сайт, вы соглашаетесь на использование файлов cookie.
         </p>
         <button
           onClick={() => setIsVisible(false)}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap"
         >
-          OK
+          Понятно
         </button>
       </div>
     </motion.div>
